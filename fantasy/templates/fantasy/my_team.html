@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>My Fantasy Team</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="players">Select Players:</label><br>
+    <select name="players" multiple size="10">
+        {% for player in players %}
+            {% if player not in team.players.all %}
+                <option value="{{ player.id }}">
+                    {{ player.name }} ({{ player.position }}) - {{ player.club.name }} {{ player.total_points }}
+                </option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    <br><br>
+    <button type="submit">Add to Team</button>
+</form>
+
+<h3>Current Squad:</h3>
+<ul>
+    {% for p in team.players.all %}
+        <li>
+            {{ p.name }} - {{ p.position }} ({{ p.club.name }}) {{ p.total_points }}
+            <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="remove_player" value="{{ p.id }}">
+                <button type="submit">Remove</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>No players selected yet.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
